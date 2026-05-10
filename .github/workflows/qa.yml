@@ -1,0 +1,46 @@
+name: Post-Deploy QA Smoke Test
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    name: Playwright Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait for Vercel deployment (60s)
+        run: sleep 60
+
+      - name: Run smoke tests
+        env:
+          BASE_URL: ${{ secrets.VERCEL_PRODUCTION_URL }}
+        run: npm run test:smoke
+
+      - name: Telegram alert on failure
+        if: failure()
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MESSAGE="🚨 kwizzo QA FAILED%0ACommit: ${{ github.sha }}%0ABranch: ${{ github.ref_name }}%0AURL: ${{ secrets.VERCEL_PRODUCTION_URL }}%0ADetails: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MESSAGE}"
