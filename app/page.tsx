@@ -6,7 +6,7 @@ import { ArrowRight, Zap, Users, Star, Trophy, Sparkles, Crown, CheckCircle2, XC
 import config from '@/vertical.config'
 import { theme, btn } from '@/lib/theme'
 import { isAiTool } from '@/vertical.config'
-import { ShimmerButton } from '@/components/magicui/shimmer-button'
+import { ShimmerButton  label='Discover Your Fair Salary' } from '@/components/magicui/shimmer-button'
 import { NumberTicker } from '@/components/magicui/number-ticker'
 import { AnimatedList } from '@/components/magicui/animated-list'
 
