@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       } as React.CSSProperties}
       suppressHydrationWarning
     >
-      <body className={`${inter.className} min-h-full flex flex-col text-white`}
+      <body className="${inter.className} min-h-full flex flex-col text-white"
         style={{ background: colors.base }}
       >
         {/* Dynamic mesh gradient bg — changes per vertical */}
@@ -47,11 +47,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
         </Providers>
 
-        <ChatBot />
+        {(() => {
+          try {
+            return <ChatBot />
+          } catch (error) {
+            console.error('Error rendering ChatBot:', error)
+            return null
+          }
+        })()}
 
         <footer className="border-t border-white/[0.06] py-8 px-6">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-white/40 text-sm">
-            <span>© {new Date().getFullYear()} {config.name}. All rights reserved.</span>
+            <span> {new Date().getFullYear()} {config.name}. All rights reserved.</span>
             <div className="flex gap-6">
               <a href="/privacy" className="hover:text-white/70 transition-colors">Privacy</a>
               <a href="/terms"   className="hover:text-white/70 transition-colors">Terms</a>
